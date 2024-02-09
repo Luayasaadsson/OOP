@@ -20,14 +20,12 @@ class Player {
 
   //------------------Metoder-----------------//
 
-  // Lägger till ett mottaget kort i spelarens hand. Används när nya kort delas ut från kortleken.
-  // Använder push metoden för att Lägga till ett kort i spelarens hand.
+// Lägger till ett mottaget kort i spelarens hand med push-metoden.
   addCard(card) {
     this.hand.push(card);
   }
 
-  // Beräknar den totala summan av kortens värde i handen för att bestämma spelarens poäng.
-  // Med reducse metoden beräknas och returneras den totala summan av värdet på korten i handen.
+  // Beräknar den totala summan av kortens värde i handen för att bestämma spelarens poäng med reduce-metoden.
   calculateHandValue() {
     return this.hand.reduce((sum, card) => sum + card.value, 0);
   }
@@ -36,7 +34,7 @@ class Player {
     discardCards(cardIndexes, discardPile) {
       // Sorterar indexen i fallande ordning för att undvika problem när jag tar bort flera kort.
       cardIndexes.sort((a, b) => b - a).forEach(index => {
-        const discardedCard = this.hand.splice(index, 1); // Tar bort kortet vid det angivna indexet.
+        const [discardedCard] = this.hand.splice(index, 1); // Tar bort kortet vid det angivna indexet.
         discardPile.push(discardedCard); // Lägger till kortet i kasthögen med push metoden.
       });
     }
@@ -46,8 +44,8 @@ class Player {
 
 // Skapar en komplett kortlek med 52 unika kort.
 function createDeck() {
-  const colors = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
-  const names = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace'];
+  const colors = ["Hearts", "Diamonds", "Clubs", "Spades"];
+  const names = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"];
   const deck = []; 
 
   // Dubbel loop för att skapa varje kombination av färg och namn.
@@ -75,9 +73,11 @@ function shuffleDeck(deck) {
 
 // Skapar och blandar en ny kortlek.
 const deck = createDeck();
-console.log("Alla kort:", deck);
+// (Oblandade kort)
+console.log("\nAlla kort:", deck.map(card => `${card.name} of ${card.color}`));
+// (Blandade kort)
 shuffleDeck(deck);
-console.log("Blandade kort:", deck);
+console.log("\nBlandade kort:", deck.map(card => `${card.name} of ${card.color}`));
 
 // Skapar två spelare
 const players = [new Player("Slim"), new Player("Luke")];
@@ -96,22 +96,45 @@ function dealCards(deck, players, numCards) {
 
 // Delar ut 5 kort till varje spelare.
 dealCards(deck, players, 5);
+console.log("\nAntal kort efter första utdelning:", deck.length); 
+
+// Efter att båda spelarna har fått 5 kort var i sina händer,
+// använder jag en forEach-loop för att visa varje spelares hand och beräkna handvärdet.
+players.forEach(player => {
+  console.log(`\n${player.name}'s hand (${player.hand.length} kort):`, player.hand.map(card => `${card.name} of ${card.color}`));
+  console.log(`\n${player.name}'s handvärde:`, player.calculateHandValue());
+});
 
 // Kasthögen där slängda kort samlas
 const discardPile = [];
 
-// Efter att båda spelarna håller nu 5 kort var i sin hand, 
-//anävnder jag en forEach-loop för att kunna ta bort 2 första korten 
-//ifrån varje spelare, med index platser första och andra platsen
-// (0 = försa, 1 = andra).
-players.forEach(player => player.discardCards([0, 1], discardPile));
 
-// Delar ut 2 nya kort till varje spelare.
+// Spelarna slänger 2 kort var och nya kort delas ut
+console.log("\nSpelarna slänger 2 kort var och får 2 nya kort:");
+players.forEach(player => player.discardCards([0, 1], discardPile));
 dealCards(deck, players, 2);
 
-// Skriver ut antalet kort kvar i kortleken och information om spelarnas händer.
-console.log("Antal kort efter utdelning:", deck.length);
+// Visar uppdaterade händer och handvärden efter att nya kort har delats ut
 players.forEach(player => {
-  console.log(`${player.name}'s hand (${player.hand.length} kort):`, player.hand);
-  console.log(`${player.name}'s handvärde:`, player.calculateHandValue());
+  console.log(`\n${player.name}'s uppdaterade hand (${player.hand.length} kort):`, player.hand.map(card => `${card.name} of ${card.color}`));
+  console.log(`\n${player.name}'s handvärde efter uppdatering:`, player.calculateHandValue());
 });
+
+// Visar antalet kort kvar i kortleken
+console.log("\nAntal kort kvar i kortleken:", deck.length);
+
+
+players.forEach(player => {
+  discardPile.push(...player.hand);
+  player.hand = [];
+});
+console.log("\nSpelarna har kastat sina kort. Kasthögen innehåller nu:", discardPile.map(card => `${card.name} of ${card.color}`));
+
+
+deck.push(...discardPile);
+console.log("\nFlyttar korten från kasthögen tillbaka till kortleken.");
+console.log("\nKasthögen är nu tom:", discardPile.length = 0);
+
+// Blandar korleken för en ny omgång.
+shuffleDeck(deck);
+console.log("\nBlandade kort:", deck.map(card => `${card.name} of ${card.color}`));
