@@ -62,8 +62,9 @@ function createDeck() {
 // att man använder algoritmen nedan. 
 // Blandar kortleken med hjälp av Fisher-Yates shuffle-algoritmen.
 function shuffleDeck(deck) {
-  for (let i = deck.length - 1; i > 0; i--) { // Väljer ett slumpmässigt index.
-    [deck[i], deck[index]] = [deck[index], deck[i]]; // Byter plats på korten.
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1)); // Väljer ett slumpmässigt index
+    [deck[i], deck[j]] = [deck[j], deck[i]]; // Byter plats på korten
   }
 }
 
