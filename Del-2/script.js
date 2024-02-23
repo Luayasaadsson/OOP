@@ -149,4 +149,4 @@ console.log("\nKasthögen är nu tom:", discardPile.length = 0);
 
 // Blandar korleken för en ny omgång.
 shuffleDeck(deck);
-console.log("\nBlandade kort:", deck.map(card => `${card.name} ${card.color} ${card.value}`));
+console.log("\nBlandade kort, och är redo för en ny omgång:", deck.map(card => `${card.name} ${card.color} ${card.value}`));
